@@ -4,11 +4,11 @@ const routerApi = require('./routes');
 const { logErrors, errorHandler, boomErrorHandler } = require('./middlewares/errorHandler')
 // const { faker } = require("@faker-js/faker");
 const app = express(); // creamos un app simplemente invocando al contructor de express
-const port = 3000; // variable para el puerto
+const port = process.env.PORT || 3000; // variable para el puerto
 
 app.use(express.json());
 
-const whitelist = ['http://localhost:5500', 'https://myapp.com'];
+const whitelist = ['http://localhost:5500', 'http://localhost'];
 const options = {
   origin: (origin, callback) => {
     if(whitelist.includes(origin)){
@@ -21,11 +21,11 @@ const options = {
 app.use(cors(options));
 
 //Crear ruta para el servidor, las rutas siempre tienen dos parametros el request y el response
-app.get('/', (req, res) =>{
+app.get('/api', (req, res) =>{
   res.send('Hola mi server en express'); //enviar al response un mensaje
 });
 
-app.get('/nueva-ruta', (req, res) =>{
+app.get('/api/nueva-ruta', (req, res) =>{
   res.send('Hola soy una nueva ruta'); //enviar al response un mensaje
 });
 
