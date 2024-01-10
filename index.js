@@ -31,6 +31,7 @@ app.get('/nueva-ruta', (req, res) =>{
 
 routerApi(app);
 
+
 //los middlewares se deben usar despues del routing
 //el orden tambien es importante para que se ejecute el middleware que queremos primero y despues
 app.use(logErrors);
