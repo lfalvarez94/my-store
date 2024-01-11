@@ -18,7 +18,7 @@ const options = {
     }
   }
 }
-app.use(cors(options));
+app.use(cors());
 
 //Crear ruta para el servidor, las rutas siempre tienen dos parametros el request y el response
 app.get('/api', (req, res) =>{
