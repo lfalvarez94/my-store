@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000; // variable para el puerto
 
 app.use(express.json());
 
-const whitelist = ['http://localhost:5500', 'https://myapp.co'];
+const whitelist = ['http://localhost:5500', 'https://my-store-ecru.vercel.app'];
 const options = {
   origin: (origin, callback) => {
     if(whitelist.includes(origin)){
@@ -18,7 +18,7 @@ const options = {
     }
   }
 }
-app.use(cors());
+app.use(cors(options));
 
 //Crear ruta para el servidor, las rutas siempre tienen dos parametros el request y el response
 app.get('/api', (req, res) =>{
