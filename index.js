@@ -1,7 +1,7 @@
 const express = require('express'); // importamos el modulo de express
 const cors = require('cors');
 const routerApi = require('./routes');
-const { logErrors, errorHandler, boomErrorHandler } = require('./middlewares/errorHandler')
+const { logErrors, errorHandler, boomErrorHandler, queryErrorHandler } = require('./middlewares/errorHandler')
 // const { faker } = require("@faker-js/faker");
 const app = express(); // creamos un app simplemente invocando al contructor de express
 const port = process.env.PORT || 3000; // variable para el puerto
@@ -18,7 +18,7 @@ const options = {
     }
   }
 }
-app.use(cors(options));
+app.use(cors());
 
 //Crear ruta para el servidor, las rutas siempre tienen dos parametros el request y el response
 app.get('/api', (req, res) =>{
@@ -35,6 +35,7 @@ routerApi(app);
 //los middlewares se deben usar despues del routing
 //el orden tambien es importante para que se ejecute el middleware que queremos primero y despues
 app.use(logErrors);
+app.use(queryErrorHandler);
 app.use(boomErrorHandler);
 app.use(errorHandler);
 

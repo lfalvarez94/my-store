@@ -1,3 +1,4 @@
+const { ValidationError, ForeignKeyConstraintError } = require('sequelize')
 //middleware de tipo error para capturar todos$los errores
 function logErrors (err, req, res, next){
   console.error(err);
@@ -21,4 +22,20 @@ function boomErrorHandler(err, req, res, next){
   }
 }
 
-module.exports = {logErrors, errorHandler, boomErrorHandler};
+function queryErrorHandler(err, req, res, next){
+  if(err instanceof ValidationError){
+    res.status(409).json({
+      error: err.errors[0].type,
+      message: err.errors[0].message,
+      detail: err.parent.detail
+    })
+  }else if(err instanceof ForeignKeyConstraintError){
+    res.status(409).json({
+      detail: err.parent.detail
+    })
+  }
+
+  next(err);
+}
+
+module.exports = {logErrors, errorHandler, boomErrorHandler, queryErrorHandler};
