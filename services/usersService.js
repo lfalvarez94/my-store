@@ -1,5 +1,6 @@
 const { faker } = require("@faker-js/faker");
 const boom = require("@hapi/boom");
+const bcrypt = require('bcrypt');
 //const getConnection = require('./../libs/postgres');
 //const pool = require('./../libs/postgresPool');
 const { models } = require('./../libs/sequelize');
@@ -36,6 +37,14 @@ class UsersService{
     //return this.users;
   }
 
+  async findByEmail(email) {
+    const rta = await models.User.findOne({
+      where: { email }
+    });
+    return rta;
+    //return this.users;
+  }
+
   async findOne(idUser){
     const user = await models.User.findByPk(idUser);
     if(!user){
@@ -49,13 +58,18 @@ class UsersService{
   }
 
   async create(data) {
-    const newUser = await models.User.create(data);
+    const hash = await bcrypt.hash(data.password, 10);
+    const newUser = await models.User.create({
+      ...data,
+      password: hash
+    });
     /*const newUser = {
       id: faker.datatype.uuid(),
       ...data
     };
     this.users.push(newUser);*/
-    return newUser;
+    delete newUser.dataValues.password; //Se elimina el campo password del usuario, el dataValues es por sequelize si fuera otro orm deberia ser diferente talvez solo delete newUser.password
+    return newUser; // No debemos retornar el password porue es una falla de seguridad
   };
 
   async update(idUser, data) {

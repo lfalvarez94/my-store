@@ -18,6 +18,11 @@ const UserSchema = {
     allowNull: false,
     type: DataTypes.STRING
   },
+  recoveryToken: {
+    allowNull: true,
+    field: 'recovery_token',
+    type: DataTypes.STRING
+  },
   role: {
     allowNull: false,
     type: DataTypes.STRING,
@@ -44,6 +49,31 @@ class User extends Model{
       timestamps: false
     }
   }
+
+  //otra forma para usar el bycript y hashear la password eñel modelo con las opciones de hooks
+  // y los scopes para eliminar el campo usuario del retrun, sin embargo para acceder al usuario
+  // con todos los campos incluido el password debemos acceder asi, const user = await models.User.scope("withPassword").findByPk(id);
+
+  /*static config(sequelize){
+    return {
+      sequelize,
+      tableName: USER_TABLE,
+      modelName: 'User',
+      timestamps: false,
+      hooks: {
+        beforeCreate: async (user) => {
+          const password = await bcrypt.hash(user.password, 10);
+          user.password = password;
+        },
+      },
+      defaultScope: {
+        attributes: { exclude: ['password'] },
+      },
+      scopes: {
+        withPassword:{ attributes: {}, }
+      },
+    }
+  }*/
 }
 
 module.exports = { USER_TABLE, UserSchema, User }
