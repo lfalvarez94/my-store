@@ -1,17 +1,18 @@
 const express = require('express'); // importamos el modulo de express
 const cors = require('cors');
 const routerApi = require('./routes');
-const { logErrors, errorHandler, boomErrorHandler } = require('./middlewares/errorHandler')
+const { checkApiKey } = require('./middlewares/authHandler');
+const { logErrors, errorHandler, boomErrorHandler, queryErrorHandler } = require('./middlewares/errorHandler')
 // const { faker } = require("@faker-js/faker");
 const app = express(); // creamos un app simplemente invocando al contructor de express
 const port = process.env.PORT || 3000; // variable para el puerto
 
 app.use(express.json());
 
-const whitelist = ['http://localhost:5500', 'https://my-store-ecru.vercel.app'];
+const whitelist = ['http://localhost:8080', 'https://my-store-ecru.vercel.app'];
 const options = {
   origin: (origin, callback) => {
-    if(whitelist.includes(origin)){
+    if(whitelist.includes(origin) || !origin){
       callback(null, true);
     }else{
       callback(new Error('no permitido'));
@@ -20,12 +21,14 @@ const options = {
 }
 app.use(cors(options));
 
+require('./utils/auth');
+
 //Crear ruta para el servidor, las rutas siempre tienen dos parametros el request y el response
 app.get('/api', (req, res) =>{
   res.send('Hola mi server en express'); //enviar al response un mensaje
 });
 
-app.get('/api/nueva-ruta', (req, res) =>{
+app.get('/nueva-ruta', checkApiKey, (req, res) =>{
   res.send('Hola soy una nueva ruta'); //enviar al response un mensaje
 });
 
@@ -35,6 +38,7 @@ routerApi(app);
 //los middlewares se deben usar despues del routing
 //el orden tambien es importante para que se ejecute el middleware que queremos primero y despues
 app.use(logErrors);
+app.use(queryErrorHandler);
 app.use(boomErrorHandler);
 app.use(errorHandler);
 
